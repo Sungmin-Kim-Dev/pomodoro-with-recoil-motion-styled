@@ -2,12 +2,12 @@ import {atom} from "recoil";
 
 export const minutesState = atom<number>({
   key: "minutesState",
-  default: 0, // Initial value: 25 minutes
+  default: 25, // Initial value: 25 minutes
 });
 
 export const secondsState = atom<number>({
   key: "secondsState",
-  default: 10, // Initial value: 0 seconds
+  default: 0, // Initial value: 0 seconds
 });
 
 export const isRunningState = atom<boolean>({
@@ -17,7 +17,7 @@ export const isRunningState = atom<boolean>({
 
 export const roundNumber = atom<number>({
   key: "roundNumber",
-  default: 3,
+  default: 0,
 });
 
 export const goalNumber = atom<number>({
