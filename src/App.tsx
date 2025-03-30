@@ -1,6 +1,8 @@
 import {motion} from "motion/react";
-import {useState} from "react";
+import {useEffect} from "react";
+import {useRecoilState} from "recoil";
 import styled from "styled-components";
+import {goalNumber, isRunningState, minutesState, roundNumber, secondsState} from "./atoms";
 
 const Container = styled.div`
   width: 100vw;
@@ -27,7 +29,7 @@ const NumberWrapper = styled.div`
 `;
 
 const NumberBox = styled(motion.div)`
-  width: 15rem;
+  width: 16rem;
   height: 20rem;
   color: ${(props) => props.theme.bgColor};
   background-color: ${(props) => props.theme.textColor};
@@ -96,53 +98,92 @@ const RecordNumber = styled.div`
 `;
 
 function App() {
-  const [play, setPlay] = useState(false);
+  const [minutes, setMinutes] = useRecoilState(minutesState);
+  const [seconds, setSeconds] = useRecoilState(secondsState);
+  const [isRunning, setIsRunning] = useRecoilState(isRunningState);
+  const [currentRound, setCurrentRound] = useRecoilState(roundNumber);
+  const [currentGoal, setCurrentGoal] = useRecoilState(goalNumber);
+
+  useEffect(() => {
+    let intervalId: number | undefined;
+    if (isRunning) {
+      intervalId = setInterval(() => {
+        if (seconds > 0) {
+          setSeconds((prevSeconds) => prevSeconds - 1);
+        } else {
+          if (minutes > 0) {
+            setMinutes((prevMinutes) => prevMinutes - 1);
+            setSeconds(59);
+          } else {
+            setIsRunning(false); // Timer finished
+            setCurrentRound((prevRound) => {
+              const newRound = prevRound + 1;
+              if (newRound % 4 === 0) {
+                setCurrentGoal((prevGoal) => prevGoal + 1);
+              }
+              return newRound % 4;
+            });
+            setMinutes(25);
+          }
+        }
+      }, 1000);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isRunning, minutes, seconds, setMinutes, setSeconds, setIsRunning, setCurrentRound, setCurrentGoal]);
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setMinutes(25);
+    setSeconds(0);
+  };
+
   return (
     <Container>
       <Title>Pomodoro</Title>
       <NumberWrapper>
-        <NumberBox variants={numberBoxVariants} initial="start" animate="end">
-          25
+        <NumberBox variants={numberBoxVariants} initial="start" animate="end" key={`m${minutes}`}>
+          {minutes < 10 ? `0${minutes}` : minutes}
         </NumberBox>
         :
-        <NumberBox variants={numberBoxVariants} initial="start" animate="end">
-          00
+        <NumberBox variants={numberBoxVariants} initial="start" animate="end" key={`s${seconds}`}>
+          {seconds < 10 ? `0${seconds}` : seconds}
         </NumberBox>
       </NumberWrapper>
       <ButtonWrapper>
-        <Button onClick={() => setPlay(!play)} variants={buttonVariants} whileHover="hover">
-          {!play ? (
+        <Button onClick={() => setIsRunning(!isRunning)} variants={buttonVariants} whileHover="hover">
+          {!isRunning ? (
             <svg data-slot="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path
-                clip-rule="evenodd"
-                fill-rule="evenodd"
+                clipRule="evenodd"
+                fillRule="evenodd"
                 d="M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm6.39-2.908a.75.75 0 0 1 .766.027l3.5 2.25a.75.75 0 0 1 0 1.262l-3.5 2.25A.75.75 0 0 1 8 12.25v-4.5a.75.75 0 0 1 .39-.658Z"></path>
             </svg>
           ) : (
             <svg data-slot="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path
-                clip-rule="evenodd"
-                fill-rule="evenodd"
+                clipRule="evenodd"
+                fillRule="evenodd"
                 d="M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm5-2.25A.75.75 0 0 1 7.75 7h.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-4.5Zm4 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-4.5Z"></path>
             </svg>
           )}
         </Button>
-        <Button variants={buttonVariants} whileHover="hover" whileTap="click">
+        <Button onClick={() => resetTimer()} variants={buttonVariants} whileHover="hover" whileTap="click">
           <svg data-slot="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path
-              clip-rule="evenodd"
-              fill-rule="evenodd"
+              clipRule="evenodd"
+              fillRule="evenodd"
               d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z"></path>
           </svg>
         </Button>
       </ButtonWrapper>
       <RecordWrapper>
         <RecordBox>
-          <RecordNumber>0/4</RecordNumber>
+          <RecordNumber>{currentRound}/4</RecordNumber>
           <p>Round</p>
         </RecordBox>
         <RecordBox>
-          <RecordNumber>0/12</RecordNumber>
+          <RecordNumber>{currentGoal}/12</RecordNumber>
           <p>Goal</p>
         </RecordBox>
       </RecordWrapper>
