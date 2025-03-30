@@ -67,6 +67,12 @@ const buttonVariants = {
       duration: 0.3,
     },
   },
+  click: {
+    rotateZ: 360,
+    transition: {
+      duration: 0.5,
+    },
+  },
 };
 
 const RecordWrapper = styled.div`
@@ -121,7 +127,7 @@ function App() {
             </svg>
           )}
         </Button>
-        <Button variants={buttonVariants} whileHover="hover">
+        <Button variants={buttonVariants} whileHover="hover" whileTap="click">
           <svg data-slot="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path
               clip-rule="evenodd"
