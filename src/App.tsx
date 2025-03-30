@@ -116,13 +116,7 @@ function App() {
             setSeconds(59);
           } else {
             setIsRunning(false); // Timer finished
-            setCurrentRound((prevRound) => {
-              const newRound = prevRound + 1;
-              if (newRound % 4 === 0) {
-                setCurrentGoal((prevGoal) => prevGoal + 1);
-              }
-              return newRound % 4;
-            });
+            setCurrentRound((prevRound) => prevRound + 1);
             setMinutes(25);
           }
         }
@@ -130,12 +124,18 @@ function App() {
     }
 
     return () => clearInterval(intervalId);
-  }, [isRunning, minutes, seconds, setMinutes, setSeconds, setIsRunning, setCurrentRound, setCurrentGoal]);
+  }, [isRunning, minutes, seconds, setMinutes, setSeconds, setIsRunning, setCurrentRound]);
+
+  useEffect(() => {
+    if (currentRound % 4 === 0 && currentRound !== 0) {
+      setCurrentGoal((prevGoal) => prevGoal + 1);
+    }
+  }, [currentRound, setCurrentGoal]);
 
   const resetTimer = () => {
     setIsRunning(false);
-    setMinutes(25);
-    setSeconds(0);
+    setMinutes(0);
+    setSeconds(3);
   };
 
   return (
@@ -179,7 +179,7 @@ function App() {
       </ButtonWrapper>
       <RecordWrapper>
         <RecordBox>
-          <RecordNumber>{currentRound}/4</RecordNumber>
+          <RecordNumber>{currentRound % 4}/4</RecordNumber>
           <p>Round</p>
         </RecordBox>
         <RecordBox>
