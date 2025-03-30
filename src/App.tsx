@@ -3,14 +3,25 @@ import {useEffect} from "react";
 import {useRecoilState} from "recoil";
 import styled from "styled-components";
 import {goalNumber, isRunningState, minutesState, roundNumber, secondsState} from "./atoms";
+import { Theme } from "./theme";
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   width: 100vw;
   height: 100vh;
-  background-color: ${(props) => props.theme.bgColor};
+  background-color: ${(props) => props.theme.bgColor2};
   padding-top: 3rem;
-  /* #9EDF9C */
 `;
+const containerVariants = {
+  running: {
+    backgroundColor: Theme.bgColor,
+    transition: { duration: 2 },
+  },
+  stopped: {
+    backgroundColor: Theme.bgColor2,
+    transition: { duration: 2 },
+  },
+};
+
 
 const Title = styled.h1`
   font-size: 5rem;
@@ -31,13 +42,21 @@ const NumberWrapper = styled.div`
 const NumberBox = styled(motion.div)`
   width: 16rem;
   height: 20rem;
-  color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.bgColor2};
   background-color: ${(props) => props.theme.textColor};
   align-content: center;
   text-align: center;
   border-radius: 3rem;
 `;
 const numberBoxVariants = {
+  // running: {
+  //   color: Theme.bgColor,
+  //   transition: { duration: 2 },
+  // },
+  // stopped: {
+  //   color: Theme.bgColor2,
+  //   transition: { duration: 2 },
+  // },
   start: {
     scale: 0.7,
   },
@@ -132,6 +151,8 @@ function App() {
     }
   }, [currentRound, setCurrentGoal]);
 
+  // 현재 라운드를 25분으로 다시 설정하는 버튼
+  // 테스트를 위해 3초로 변경
   const resetTimer = () => {
     setIsRunning(false);
     setMinutes(0);
@@ -139,7 +160,7 @@ function App() {
   };
 
   return (
-    <Container>
+    <Container variants={containerVariants} initial="stopped" animate={isRunning ? "running" : "stopped"}>
       <Title>Pomodoro</Title>
       <NumberWrapper>
         <NumberBox variants={numberBoxVariants} initial="start" animate="end" key={`m${minutes}`}>
