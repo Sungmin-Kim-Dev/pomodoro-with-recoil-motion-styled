@@ -3,7 +3,7 @@ import {useEffect} from "react";
 import {useRecoilState} from "recoil";
 import styled from "styled-components";
 import {goalNumber, isRunningState, minutesState, roundNumber, secondsState} from "./atoms";
-import { Theme } from "./theme";
+import {Theme} from "./theme";
 
 const Container = styled(motion.div)`
   width: 100vw;
@@ -14,14 +14,13 @@ const Container = styled(motion.div)`
 const containerVariants = {
   running: {
     backgroundColor: Theme.bgColor,
-    transition: { duration: 2 },
+    transition: {duration: 0.5},
   },
   stopped: {
     backgroundColor: Theme.bgColor2,
-    transition: { duration: 2 },
+    transition: {duration: 0.5},
   },
 };
-
 
 const Title = styled.h1`
   font-size: 5rem;
@@ -163,11 +162,21 @@ function App() {
     <Container variants={containerVariants} initial="stopped" animate={isRunning ? "running" : "stopped"}>
       <Title>Pomodoro</Title>
       <NumberWrapper>
-        <NumberBox variants={numberBoxVariants} initial="start" animate="end" key={`m${minutes}`}>
+        <NumberBox
+          style={{color: isRunning ? Theme.bgColor : Theme.bgColor2}}
+          variants={numberBoxVariants}
+          initial="start"
+          animate="end"
+          key={`m${minutes}`}>
           {minutes < 10 ? `0${minutes}` : minutes}
         </NumberBox>
         :
-        <NumberBox variants={numberBoxVariants} initial="start" animate="end" key={`s${seconds}`}>
+        <NumberBox
+          style={{color: isRunning ? Theme.bgColor : Theme.bgColor2}}
+          variants={numberBoxVariants}
+          initial="start"
+          animate="end"
+          key={`s${seconds}`}>
           {seconds < 10 ? `0${seconds}` : seconds}
         </NumberBox>
       </NumberWrapper>
