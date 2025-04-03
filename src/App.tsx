@@ -7,7 +7,7 @@ import {Theme} from "./theme";
 
 const Container = styled(motion.div)`
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
   background-color: ${(props) => props.theme.bgColor2};
   padding-top: 3rem;
 `;
